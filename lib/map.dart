@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
+import 'package:location/location.dart';
 import 'package:mysql1/mysql1.dart';
-
 
 class Map extends StatefulWidget {
   @override
@@ -12,30 +12,46 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
 
-  Completer<GoogleMapController> _controller = Completer();
+  Location _location = Location();
+  GoogleMapController _controller;
+
   final Set<Heatmap> _heatmaps = {};
-  static final CameraPosition _initialCamPos = CameraPosition(
-    target: LatLng(37.35228744711068, -121.90433746231483),
-    zoom: 14.4746,
-  );
+
+  LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
   LatLng _heatmapLocation = LatLng(37.3382, -121.8863);
+
+  void _onMapCreated(GoogleMapController _cntlr)
+  {
+    _controller = _cntlr;
+    _location.onLocationChanged.listen((l){
+      setState(() {
+        print("why");
+        _controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 15),
+          ),
+        );
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: GoogleMap(
         mapType: MapType.normal,
-        initialCameraPosition: _initialCamPos,
+        initialCameraPosition: CameraPosition(target: _initialcameraposition),
         heatmaps: _heatmaps,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+        onMapCreated: _onMapCreated,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+        compassEnabled: true,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _addHeatmap,
-        label: Text('Add Heatmap'),
-        icon: Icon(Icons.add_box),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: _addHeatmap,
+      //   label: Text('Add Heatmap'),
+      //   icon: Icon(Icons.add_box),
+      // ),
     );
   }
   Future<void> _addHeatmap() async{
