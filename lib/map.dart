@@ -40,7 +40,6 @@ class _MapState extends State<Map> {
   }
   Future<void> _addHeatmap() async{
     List<WeightedLatLng> coords = await _createPoints(_heatmapLocation);
-    print(coords);
     setState(() {
       _heatmaps.add(
           Heatmap(
