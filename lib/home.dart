@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_drawer.dart';
-import 'map.dart';
+import 'gmap.dart';
 import 'search_bar.dart';
 
 class Home extends StatefulWidget {
@@ -15,7 +15,7 @@ class _HomeState extends State<Home>{
   @override
 
   int _currentIndex = 0;
-  final List<Widget> _children = [Map(), SearchBar()];
+  final List<Widget> _children = [GMap(), SearchBar()];
 
   Widget build(BuildContext context){
     return Scaffold(

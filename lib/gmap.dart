@@ -1,24 +1,24 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crime_spot/location_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
 import 'package:location/location.dart';
-import 'package:mysql1/mysql1.dart';
 import 'package:provider/provider.dart';
 
-class Map extends StatefulWidget {
+class GMap extends StatefulWidget {
   @override
-  _MapState createState() => _MapState();
+  _GMapState createState() => _GMapState();
 }
 
-class _MapState extends State<Map> {
+class _GMapState extends State<GMap> {
   Location _location = Location();
   GoogleMapController _controller;
 
   final Set<Heatmap> _heatmaps = {};
 
-  LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
   LatLng _heatmapLocation = LatLng(37.3382, -121.8863);
 
   void initState() {
@@ -33,7 +33,7 @@ class _MapState extends State<Map> {
         print("why");
         _controller.animateCamera(
           CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 15),
+            CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 5),
           ),
         );
       });
@@ -44,20 +44,6 @@ class _MapState extends State<Map> {
   Widget build(BuildContext context) {
     return new Scaffold(
       body: googleMapUI(),
-      // body: GoogleMap(
-      //   mapType: MapType.normal,
-      //   initialCameraPosition: CameraPosition(target: _initialcameraposition),
-      //   heatmaps: _heatmaps,
-      //   onMapCreated: _onMapCreated,
-      //   myLocationEnabled: true,
-      //   myLocationButtonEnabled: true,
-      //   compassEnabled: true,
-      // ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _addHeatmap,
-      //   label: Text('Add Heatmap'),
-      //   icon: Icon(Icons.add_box),
-      // ),
     );
   }
 
@@ -76,24 +62,18 @@ class _MapState extends State<Map> {
   }
 
   Future<List<LatLng>> _getData() async {
-    var settings = new ConnectionSettings(
-      host: '10.0.2.2',
-      port: 3306,
-      user: 'danny',
-      password: 'root',
-      db: 'crimespot',
-    );
-    var conn = await MySqlConnection.connect(settings);
-    var results = await conn.query("SELECT latitude, longitude FROM allcrime");
-    await conn.close();
-    final List<LatLng> resultList = [];
-    for (var row in results) {
-      resultList.add(LatLng(row[0], row[1]));
-    }
-    return resultList;
-  }
+    List<LatLng> resultsList = [];
+    await Firebase.initializeApp();
+    await FirebaseFirestore.instance.collection('crimes').get().then((QuerySnapshot querySnapshot){
+      querySnapshot.docs.forEach((result){
+        final Map<String, dynamic> coords = Map<String, dynamic>.from(result["coord"]);
+        resultsList.add(LatLng(coords["lat"], coords["lng"]));
+      });
+    });
 
-  //heatmap generation helper functions
+    return resultsList;
+  }
+  
   Future<List<WeightedLatLng>> _createPoints(LatLng location) async {
     final List<WeightedLatLng> points = <WeightedLatLng>[];
     List<LatLng> data = await _getData();
@@ -103,17 +83,14 @@ class _MapState extends State<Map> {
     return points;
   }
 
-  WeightedLatLng _createWeightedLatLng(double lat, double lng, int weight) {
-    return WeightedLatLng(point: LatLng(lat, lng), intensity: weight);
-  }
-
   Widget googleMapUI() {
+    _addHeatmap();
     return Consumer<LocationProvider>(builder: (consumerContext, model, child) {
       if (model.locationPosition != null) {
         return GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition:
-              CameraPosition(target: model.locationPosition, zoom: 19),
+        CameraPosition(target: model.locationPosition, zoom: 19),
           heatmaps: _heatmaps,
           onMapCreated: (GoogleMapController controller) {},
           myLocationEnabled: true,

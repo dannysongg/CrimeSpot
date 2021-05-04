@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.0
   location: ^3.0.2
   provider: ^4.3.3
+  cloud_firestore: ^0.16.0+1
 
 dev_dependencies:
   flutter_test:
