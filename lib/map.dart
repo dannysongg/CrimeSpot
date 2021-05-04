@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:crime_spot/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
 import 'package:location/location.dart';
 import 'package:mysql1/mysql1.dart';
+import 'package:provider/provider.dart';
 
 class Map extends StatefulWidget {
   @override
@@ -11,7 +13,6 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-
   Location _location = Location();
   GoogleMapController _controller;
 
@@ -20,10 +21,14 @@ class _MapState extends State<Map> {
   LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
   LatLng _heatmapLocation = LatLng(37.3382, -121.8863);
 
-  void _onMapCreated(GoogleMapController _cntlr)
-  {
+  void initState() {
+    super.initState();
+    Provider.of<LocationProvider>(context, listen: false).initialization();
+  }
+
+  void _onMapCreated(GoogleMapController _cntlr) {
     _controller = _cntlr;
-    _location.onLocationChanged.listen((l){
+    _location.onLocationChanged.listen((l) {
       setState(() {
         print("why");
         _controller.animateCamera(
@@ -38,15 +43,16 @@ class _MapState extends State<Map> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(target: _initialcameraposition),
-        heatmaps: _heatmaps,
-        onMapCreated: _onMapCreated,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        compassEnabled: true,
-      ),
+      body: googleMapUI(),
+      // body: GoogleMap(
+      //   mapType: MapType.normal,
+      //   initialCameraPosition: CameraPosition(target: _initialcameraposition),
+      //   heatmaps: _heatmaps,
+      //   onMapCreated: _onMapCreated,
+      //   myLocationEnabled: true,
+      //   myLocationButtonEnabled: true,
+      //   compassEnabled: true,
+      // ),
       // floatingActionButton: FloatingActionButton.extended(
       //   onPressed: _addHeatmap,
       //   label: Text('Add Heatmap'),
@@ -54,24 +60,22 @@ class _MapState extends State<Map> {
       // ),
     );
   }
-  Future<void> _addHeatmap() async{
+
+  Future<void> _addHeatmap() async {
     List<WeightedLatLng> coords = await _createPoints(_heatmapLocation);
     setState(() {
-      _heatmaps.add(
-          Heatmap(
-              heatmapId: HeatmapId(_heatmapLocation.toString()),
-              points: coords,
-              radius: 50,
-              visible: true,
-              gradient:  HeatmapGradient(
-                  colors: <Color>[Colors.green, Colors.red], startPoints: <double>[0.2, 0.8]
-              )
-          )
-      );
+      _heatmaps.add(Heatmap(
+          heatmapId: HeatmapId(_heatmapLocation.toString()),
+          points: coords,
+          radius: 50,
+          visible: true,
+          gradient: HeatmapGradient(
+              colors: <Color>[Colors.green, Colors.red],
+              startPoints: <double>[0.2, 0.8])));
     });
   }
 
-  Future<List<LatLng>> _getData() async{
+  Future<List<LatLng>> _getData() async {
     var settings = new ConnectionSettings(
       host: '10.0.2.2',
       port: 3306,
@@ -83,7 +87,7 @@ class _MapState extends State<Map> {
     var results = await conn.query("SELECT latitude, longitude FROM allcrime");
     await conn.close();
     final List<LatLng> resultList = [];
-    for (var row in results){
+    for (var row in results) {
       resultList.add(LatLng(row[0], row[1]));
     }
     return resultList;
@@ -93,7 +97,7 @@ class _MapState extends State<Map> {
   Future<List<WeightedLatLng>> _createPoints(LatLng location) async {
     final List<WeightedLatLng> points = <WeightedLatLng>[];
     List<LatLng> data = await _getData();
-    for(LatLng coord in data){
+    for (LatLng coord in data) {
       points.add(WeightedLatLng(point: coord, intensity: 1));
     }
     return points;
@@ -101,5 +105,27 @@ class _MapState extends State<Map> {
 
   WeightedLatLng _createWeightedLatLng(double lat, double lng, int weight) {
     return WeightedLatLng(point: LatLng(lat, lng), intensity: weight);
+  }
+
+  Widget googleMapUI() {
+    return Consumer<LocationProvider>(builder: (consumerContext, model, child) {
+      if (model.locationPosition != null) {
+        return GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition:
+              CameraPosition(target: model.locationPosition, zoom: 19),
+          heatmaps: _heatmaps,
+          onMapCreated: (GoogleMapController controller) {},
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          compassEnabled: true,
+        );
+      }
+      return Container(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    });
   }
 }
