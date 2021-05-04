@@ -5,7 +5,6 @@ import 'package:crime_spot/location_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class GMap extends StatefulWidget {
@@ -14,9 +13,6 @@ class GMap extends StatefulWidget {
 }
 
 class _GMapState extends State<GMap> {
-  Location _location = Location();
-  GoogleMapController _controller;
-
   final Set<Heatmap> _heatmaps = {};
 
   LatLng _heatmapLocation = LatLng(37.3382, -121.8863);
@@ -26,22 +22,9 @@ class _GMapState extends State<GMap> {
     Provider.of<LocationProvider>(context, listen: false).initialization();
   }
 
-  void _onMapCreated(GoogleMapController _cntlr) {
-    _controller = _cntlr;
-    _location.onLocationChanged.listen((l) {
-      setState(() {
-        print("why");
-        _controller.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 5),
-          ),
-        );
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    _addHeatmap();
     return new Scaffold(
       body: googleMapUI(),
     );
@@ -70,10 +53,9 @@ class _GMapState extends State<GMap> {
         resultsList.add(LatLng(coords["lat"], coords["lng"]));
       });
     });
-
     return resultsList;
   }
-  
+
   Future<List<WeightedLatLng>> _createPoints(LatLng location) async {
     final List<WeightedLatLng> points = <WeightedLatLng>[];
     List<LatLng> data = await _getData();
@@ -84,7 +66,6 @@ class _GMapState extends State<GMap> {
   }
 
   Widget googleMapUI() {
-    _addHeatmap();
     return Consumer<LocationProvider>(builder: (consumerContext, model, child) {
       if (model.locationPosition != null) {
         return GoogleMap(
