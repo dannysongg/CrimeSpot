@@ -61,12 +61,12 @@ class _GMapState extends State<GMap> {
         .collection('crimes')
         .get()
         .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        final Map<String, dynamic> coords =
-            Map<String, dynamic>.from(result["coord"]);
-        resultsList.add(LatLng(coords["lat"], coords["lng"]));
-      });
-    });
+          querySnapshot.docs.forEach((result) {
+            final Map<String, dynamic> coords =
+                Map<String, dynamic>.from(result["coord"]);
+            resultsList.add(LatLng(coords["lat"], coords["lng"]));
+          });
+        });
     return resultsList;
   }
 
