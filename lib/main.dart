@@ -1,27 +1,37 @@
 import 'package:crime_spot/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:geolocator/geolocator.dart';
+import 'geolocator_service.dart';
 
 import 'home.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
-class MyApp extends StatelessWidget{
+class MyApp extends StatelessWidget {
+  final geoService = GeolocatorService();
   @override
-  Widget build(BuildContext context){
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (context) => LocationProvider(),
-            child: Home(),
-        )
-      ],
+  Widget build(BuildContext context) {
+    return FutureProvider(
+      create: (context) => geoService.getInitialLocation(),
       child: MaterialApp(
-          home: Home()
+        title: 'CrimeSpot',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Consumer<Position>(
+          builder: (context, position, widget) {
+            return (position != null)
+                ? Home(position)
+                : Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }
 }
-
-
-
