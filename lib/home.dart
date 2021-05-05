@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'app_drawer.dart';
 import 'gmap.dart';
+import 'nearby.dart';
 import 'search_bar.dart';
+import 'geolocator_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Home extends StatefulWidget {
+  final Position initialPosition;
+
+  Home(this.initialPosition); //constructor
+
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
@@ -12,10 +20,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home>{
-  @override
-
   int _currentIndex = 0;
-  final List<Widget> _children = [GMap(), SearchBar()];
+  List<Widget> _children;
+
+  void initState() {
+    _children = [HeatMap(), NearbyMap()];
+  }
 
   Widget build(BuildContext context){
     return Scaffold(
@@ -47,6 +57,14 @@ class _HomeState extends State<Home>{
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  Widget NearbyMap() {
+    return Nearby(widget.initialPosition);
+  }
+
+  Widget HeatMap() {
+    return GMap(widget.initialPosition);
   }
 }
 
