@@ -32,7 +32,9 @@ class _NearbyState extends State<Nearby> {
     geo = Geoflutterfire();
 
     //create a stream for center coordinates
-    GeoFirePoint _center = geo.point(latitude: widget.initialPosition.latitude, longitude: widget.initialPosition.longitude);
+    GeoFirePoint _center = geo.point(
+        latitude: widget.initialPosition.latitude,
+        longitude: widget.initialPosition.longitude);
     center = BehaviorSubject<GeoFirePoint>.seeded(_center);
 
     var collectionReference = _firestore.collection('crimes');
@@ -93,13 +95,13 @@ class _NearbyState extends State<Nearby> {
   void _addMarker(double lat, double lng, document) {
     final id = MarkerId(lat.toString() + lng.toString());
     final _marker = Marker(
-      markerId: id,
-      position: LatLng(lat, lng),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
-      infoWindow: InfoWindow(
+        markerId: id,
+        position: LatLng(lat, lng),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+        infoWindow: InfoWindow(
           title: document.data()['primary_type'],
-          snippet: document.data()['datetime'].toString()),
-    );
+          snippet: DateTime.parse(document.data()['datetime']).toString(),
+        ));
     setState(() {
       markers[id] = _marker;
     });
@@ -113,7 +115,8 @@ class _NearbyState extends State<Nearby> {
 
   void newMarkers(Position pos) {
     markers.clear();
-    GeoFirePoint newCenter = geo.point(latitude: pos.latitude, longitude: pos.longitude);
+    GeoFirePoint newCenter =
+        geo.point(latitude: pos.latitude, longitude: pos.longitude);
     center.add(newCenter); //triggers switchMap to query at new center
   }
 }
