@@ -25,11 +25,11 @@ class _HomeState extends State<Home>{
   List<Widget> _children;
 
   void initState() {
-    Notifyer().notifyUser();
     _children = [HeatMap(), NearbyMap()];
   }
 
   Widget build(BuildContext context){
+    Notifyer(context).notifyUser();
     return Scaffold(
       body: _children[_currentIndex],
       drawer: AppDrawer(),
@@ -69,8 +69,9 @@ class _HomeState extends State<Home>{
     return GMap(widget.initialPosition);
   }
 
-  Notify Notifyer() {
-    return Notify(widget.initialPosition);
+  Notify Notifyer(BuildContext context) {
+    print("notifying");
+    return Notify(context);
   }
 }
 
