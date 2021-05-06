@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crime_spot/geolocator_service.dart';
-import 'package:crime_spot/location_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
-import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Nearby extends StatefulWidget {
@@ -27,7 +24,7 @@ class _NearbyState extends State<Nearby> {
   final _firestore = FirebaseFirestore.instance;
   Geoflutterfire geo;
   Stream<List<DocumentSnapshot>> stream;
-  double radius = 2;
+  double radius = 1.2;
   BehaviorSubject<GeoFirePoint> center;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 

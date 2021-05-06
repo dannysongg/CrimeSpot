@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import 'app_drawer.dart';
 import 'gmap.dart';
 import 'nearby.dart';
-import 'search_bar.dart';
-import 'geolocator_service.dart';
 import 'notify.dart';
 import 'package:geolocator/geolocator.dart';
-import 'geolocator_service.dart';
 
 class Home extends StatefulWidget {
   final Position initialPosition;
@@ -68,5 +63,4 @@ class _HomeState extends State<Home>{
     return Notify(context);
   }
 }
-
 
