@@ -6,6 +6,7 @@ import 'gmap.dart';
 import 'nearby.dart';
 import 'search_bar.dart';
 import 'geolocator_service.dart';
+import 'notify.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Home extends StatefulWidget {
@@ -28,6 +29,7 @@ class _HomeState extends State<Home>{
   }
 
   Widget build(BuildContext context){
+    Notifyer(context).notifyUser();
     return Scaffold(
       body: _children[_currentIndex],
       drawer: AppDrawer(),
@@ -65,6 +67,11 @@ class _HomeState extends State<Home>{
 
   Widget HeatMap() {
     return GMap(widget.initialPosition);
+  }
+
+  Notify Notifyer(BuildContext context) {
+    print("notifying");
+    return Notify(context);
   }
 }
 
