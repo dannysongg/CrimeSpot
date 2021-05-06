@@ -8,6 +8,7 @@ import 'search_bar.dart';
 import 'geolocator_service.dart';
 import 'notify.dart';
 import 'package:geolocator/geolocator.dart';
+import 'geolocator_service.dart';
 
 class Home extends StatefulWidget {
   final Position initialPosition;
@@ -22,29 +23,30 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home>{
   int _currentIndex = 0;
-  List<Widget> _children;
-
-  void initState() {
-    _children = [HeatMap(), NearbyMap()];
-  }
 
   Widget build(BuildContext context){
     Notifyer(context).notifyUser();
     return Scaffold(
-      body: _children[_currentIndex],
+      body: IndexedStack(
+        children: <Widget>[
+          GMap(widget.initialPosition),
+          Nearby(widget.initialPosition),
+        ],
+        index: _currentIndex,
+      ),
       drawer: AppDrawer(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.ac_unit),
+            icon: Icon(Icons.whatshot),
             label: 'Heat Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings_sharp),
+            icon: Icon(Icons.pin_drop),
             label: 'Near By',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.agriculture_outlined),
+            icon: Icon(Icons.bar_chart),
             label: 'Analytics',
           ),
         ],
@@ -59,14 +61,6 @@ class _HomeState extends State<Home>{
     setState(() {
       _currentIndex = index;
     });
-  }
-
-  Widget NearbyMap() {
-    return Nearby(widget.initialPosition);
-  }
-
-  Widget HeatMap() {
-    return GMap(widget.initialPosition);
   }
 
   Notify Notifyer(BuildContext context) {
