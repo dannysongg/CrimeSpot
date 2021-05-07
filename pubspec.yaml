@@ -28,13 +28,12 @@ dependencies:
   google_maps_flutter_heatmap: ^0.1.0
   mysql1: ^0.17.1
   cupertino_icons: ^1.0.0
-  location: ^3.0.2
-  provider: ^4.3.3
   cloud_firestore: ^0.16.0+1
   geoflutterfire: ^2.2.2
   rxdart: ^0.25.0
   geolocator: ^6.2.1
   dart_geohash: ^1.0.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
