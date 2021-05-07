@@ -24,7 +24,7 @@ class _NearbyState extends State<Nearby> {
   final _firestore = FirebaseFirestore.instance;
   Geoflutterfire geo;
   Stream<List<DocumentSnapshot>> stream;
-  double radius = 1.2;
+  double radius = 1.5;
   BehaviorSubject<GeoFirePoint> center;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
