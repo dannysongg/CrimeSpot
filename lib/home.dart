@@ -76,7 +76,7 @@ class _HomeState extends State<Home> {
 
     await FirebaseFirestore.instance
         .collection('crimes')
-        .limit(2000)
+        // .limit(2000)
         .get()
         .then((QuerySnapshot querySnapshot) {
           print(querySnapshot.docs.length);

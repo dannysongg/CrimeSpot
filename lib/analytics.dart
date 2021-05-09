@@ -32,32 +32,32 @@ class _AnalyticsState extends State<Analytics> {
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(top: 50.0),
+                        margin: const EdgeInsets.only(top: 50.0),
                         child: PieChart(
-                      dataMap: crimeTypes,
-                      animationDuration: Duration(milliseconds: 1000),
-                      chartLegendSpacing: 40,
-                      chartRadius: MediaQuery.of(context).size.width / 1.5,
-                      initialAngleInDegree: 0,
-                      chartType: ChartType.disc,
-                      ringStrokeWidth: 12,
-                      centerText: "Crime Types",
-                      legendOptions: LegendOptions(
-                        showLegendsInRow: false,
-                        legendPosition: LegendPosition.bottom,
-                        showLegends: true,
-                        legendShape: BoxShape.circle,
-                        legendTextStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      chartValuesOptions: ChartValuesOptions(
-                        showChartValueBackground: true,
-                        showChartValues: true,
-                        showChartValuesInPercentage: true,
-                        showChartValuesOutside: true,
-                      ),
-                    ))
+                          dataMap: crimeTypes,
+                          animationDuration: Duration(milliseconds: 1000),
+                          chartLegendSpacing: 40,
+                          chartRadius: MediaQuery.of(context).size.width / 1.5,
+                          initialAngleInDegree: 0,
+                          chartType: ChartType.disc,
+                          ringStrokeWidth: 12,
+                          centerText: "Crime Types",
+                          legendOptions: LegendOptions(
+                            showLegendsInRow: false,
+                            legendPosition: LegendPosition.bottom,
+                            showLegends: true,
+                            legendShape: BoxShape.circle,
+                            legendTextStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          chartValuesOptions: ChartValuesOptions(
+                            showChartValueBackground: true,
+                            showChartValues: true,
+                            showChartValuesInPercentage: false,
+                            showChartValuesOutside: true,
+                          ),
+                        ))
                   ],
                 )));
       });
@@ -81,10 +81,10 @@ class _AnalyticsState extends State<Analytics> {
     });
 
     final sortedCrimes = new SplayTreeMap.from(
-        crimeTypes, (a, b) => crimeTypes[a] < crimeTypes[b] ? 1 : -1);
+        crimeTypes, (a, b) => crimeTypes[a] < crimeTypes[b] ? 1 : -1).cast<String, double>();
 
     //get crimes within a threshold
-    int threshold = 40;
+    double threshold = widget.crimeData.length * 0.02;
     Map<String, double> topCrimes = Map.from(sortedCrimes)
       ..removeWhere((key, value) => value <= threshold);
 
