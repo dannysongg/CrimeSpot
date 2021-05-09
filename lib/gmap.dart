@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_heatmap/google_maps_flutter_heatmap.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,8 +7,9 @@ import 'geolocator_service.dart';
 
 class GMap extends StatefulWidget {
   final Position initialPosition;
+  final List<dynamic> crimeData;
 
-  GMap(this.initialPosition);
+  GMap({Key key, this.initialPosition, this.crimeData}) : super(key: key);
 
   @override
   _GMapState createState() => _GMapState();
@@ -33,9 +32,7 @@ class _GMapState extends State<GMap> {
   @override
   Widget build(BuildContext context) {
     _addHeatmap();
-    return new Scaffold(
-      body: googleMapUI(),
-    );
+    return googleMapUI();
   }
 
   Future<void> _addHeatmap() async {
@@ -52,25 +49,30 @@ class _GMapState extends State<GMap> {
     });
   }
 
-  Future<List<LatLng>> _getData() async {
+  List<LatLng> _getData()  {
     List<LatLng> resultsList = [];
-    await Firebase.initializeApp();
-    await FirebaseFirestore.instance
-        .collection('crimes')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-          querySnapshot.docs.forEach((result) {
-            final Map<String, dynamic> coords =
-                Map<String, dynamic>.from(result["coord"]);
-            resultsList.add(LatLng(coords["lat"], coords["lng"]));
-          });
-        });
+    // await Firebase.initializeApp();
+    // await FirebaseFirestore.instance
+    //     .collection('crimes')
+    //     .get()
+    //     .then((QuerySnapshot querySnapshot) {
+    //       print(querySnapshot.docs.length);
+    //       querySnapshot.docs.forEach((result) {
+    //         final Map<String, dynamic> coords =
+    //             Map<String, dynamic>.from(result["coord"]);
+    //         resultsList.add(LatLng(coords["lat"], coords["lng"]));
+    //       });
+    //     });
+    widget.crimeData.forEach((crime) {
+      final Map<String, dynamic> coords = Map<String, dynamic>.from(crime["coord"]);
+      resultsList.add(LatLng(coords["lat"], coords["lng"]));
+    });
     return resultsList;
   }
 
   Future<List<WeightedLatLng>> _createPoints(LatLng location) async {
     final List<WeightedLatLng> points = <WeightedLatLng>[];
-    List<LatLng> data = await _getData();
+    List<LatLng> data = _getData();
     for (LatLng coord in data) {
       points.add(WeightedLatLng(point: coord, intensity: 1));
     }
@@ -83,7 +85,7 @@ class _GMapState extends State<GMap> {
       initialCameraPosition: CameraPosition(
           target: LatLng(
               widget.initialPosition.latitude, widget.initialPosition.longitude),
-          zoom: 15),
+          zoom: 12),
       heatmaps: _heatmaps,
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
@@ -97,6 +99,6 @@ class _GMapState extends State<GMap> {
   Future<void> centerScreen(Position pos) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: 15)));
+        CameraPosition(target: LatLng(pos.latitude, pos.longitude), zoom: 12)));
   }
 }
