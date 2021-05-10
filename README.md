@@ -1,6 +1,6 @@
 # CrimeSpot
 
-An application to view crime density
+An Android application for crime data visualization, location of nearby crimes, and notifications for crime-dense locations.
 
 ## Installation Instructions
 1. ### Install Flutter
@@ -22,7 +22,7 @@ The application requires an emulator to run. If there are any issues setting up 
 for more information
 
 4. ### Install Dependencies
-To install all dependencies:
+To install all dependencies, run this command in your shell:
 ```bash
 flutter pub get
 ```
