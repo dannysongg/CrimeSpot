@@ -3,12 +3,12 @@
 An application to view crime density
 
 ## Installation Instructions
-### Install Flutter
+### * Install Flutter
 Installation instructions for Windows: https://flutter.dev/docs/get-started/install/windows
 
 Installation instructions for Mac: https://flutter.dev/docs/get-started/install/macos
 
-### Install Android Studio
+### * Install Android Studio
 Download at:
 https://developer.android.com/studio/?gclid=CjwKCAjwkN6EBhBNEiwADVfya1_6AVtc64N0V7Kqkm95xi2XzjE-1VqaPv-4jtTqeQ-yaZUM53EHLhoCALMQAvD_BwE&gclsrc=aw.ds 
 
