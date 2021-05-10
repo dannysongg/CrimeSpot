@@ -22,7 +22,7 @@ The application requires an emulator to run. If there are any issues setting up 
 for more information
 
 4. ### Install Dependencies
-To install all dependencies, run this command in your shell:
+Navigation to the root directory of this repository and run this command in your shell:
 ```bash
 flutter pub get
 ```
