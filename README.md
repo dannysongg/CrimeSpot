@@ -11,6 +11,7 @@ Installation instructions for Mac: https://flutter.dev/docs/get-started/install/
 ### Install Android Studio
 Download at:
 https://developer.android.com/studio/?gclid=CjwKCAjwkN6EBhBNEiwADVfya1_6AVtc64N0V7Kqkm95xi2XzjE-1VqaPv-4jtTqeQ-yaZUM53EHLhoCALMQAvD_BwE&gclsrc=aw.ds 
+
 Go through the setup wizard to install the lastest Android SDK, Android SDK command-line tools, and Android SDK Build-Tools, which are required
 by Flutter when developing for Android.
 
