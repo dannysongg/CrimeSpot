@@ -1,9 +1,12 @@
+import 'package:crime_spot/analytics.dart';
 import 'package:flutter/material.dart';
 import 'app_drawer.dart';
 import 'gmap.dart';
 import 'nearby.dart';
 import 'notify.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class Home extends StatefulWidget {
   final Position initialPosition;
@@ -16,16 +19,25 @@ class Home extends StatefulWidget {
   }
 }
 
-class _HomeState extends State<Home>{
+class _HomeState extends State<Home> {
   int _currentIndex = 0;
+  List<dynamic> crimeData = [];
+  Object redrawObject;
 
-  Widget build(BuildContext context){
+  void initState() {
+    super.initState();
+    _getData();
+    //_getData().then((result) => crimeData = result);
+  }
+
+  Widget build(BuildContext context) {
     Notifyer(context).notifyUser();
     return Scaffold(
       body: IndexedStack(
         children: <Widget>[
-          GMap(widget.initialPosition),
+          GMap(initialPosition: widget.initialPosition, crimeData: crimeData, key: ValueKey<Object>(redrawObject)),
           Nearby(widget.initialPosition),
+          Analytics(crimeData: crimeData, key: UniqueKey())
         ],
         index: _currentIndex,
       ),
@@ -52,9 +64,29 @@ class _HomeState extends State<Home>{
     );
   }
 
-  void onTabTapped(int index){
+  void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
+    });
+  }
+
+  void _getData() async {
+    print('getting data');
+    List<dynamic> crimes = [];
+
+    await FirebaseFirestore.instance
+        .collection('crimes')
+        // .limit(2000)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+          print(querySnapshot.docs.length);
+          querySnapshot.docs.forEach((result) {
+            crimes.add(result);
+          });
+        });
+    setState(() {
+      crimeData = crimes;
+      redrawObject = new Object();
     });
   }
 
@@ -63,4 +95,3 @@ class _HomeState extends State<Home>{
     return Notify(context);
   }
 }
-
