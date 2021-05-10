@@ -13,7 +13,7 @@ Download at:
 https://developer.android.com/studio/?gclid=CjwKCAjwkN6EBhBNEiwADVfya1_6AVtc64N0V7Kqkm95xi2XzjE-1VqaPv-4jtTqeQ-yaZUM53EHLhoCALMQAvD_BwE&gclsrc=aw.ds 
 
 Go through the setup wizard to install the lastest Android SDK, Android SDK command-line tools, and Android SDK Build-Tools, which are required
-by Flutter when developing for Android.
+by Flutter when developing for Android. Also make sure to set the Flutter SDK path from your local path in Android Studio under preferences.
 
 3. ### Android Virtual Device (AVD) manager
 Use the AVD manager to set up an Android emulator. Detailed steps can be found here: https://developer.android.com/studio/run/managing-avds
@@ -31,4 +31,6 @@ flutter pub get
 Make sure that an Android emulator is set up and running before you run the application via Android Studio.
 
 
+## Additional Links
+Repository for Node.js server can be found at https://github.com/dannygiap/CrimeSpot-api
 
