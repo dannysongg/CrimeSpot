@@ -22,26 +22,23 @@ class _NearbyState extends State<Nearby> {
   Completer<GoogleMapController> _controller = Completer();
 
   final _firestore = FirebaseFirestore.instance;
-  Geoflutterfire geo;
+  Geoflutterfire geo = Geoflutterfire();
   Stream<List<DocumentSnapshot>> stream1;
   Stream<List<DocumentSnapshot>> stream2;
-  //double radius = 1.2;
   BehaviorSubject<double> radius = BehaviorSubject<double>.seeded(1.0);
   BehaviorSubject<GeoFirePoint> center;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  var sources = [];
+  String dropdownValue = 'ALL';
 
   @override
   void initState() {
     super.initState();
-    geo = Geoflutterfire();
 
     //create a stream for center coordinates
     GeoFirePoint _center = geo.point(
         latitude: widget.initialPosition.latitude,
         longitude: widget.initialPosition.longitude);
     center = BehaviorSubject<GeoFirePoint>.seeded(_center);
-    sources = [center, radius];
 
     var collectionReference = _firestore.collection('crimes');
     stream1 = center.switchMap((cent) {
@@ -92,6 +89,44 @@ class _NearbyState extends State<Nearby> {
                   radius.add(value);
                 });
               },
+            )),
+        Positioned(
+            top: 30,
+            left: 20,
+            child: DropdownButton<String>(
+              value: dropdownValue,
+              icon: const Icon(Icons.arrow_downward),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.black),
+              underline: Container(
+                height: 2,
+                color: Colors.black,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  dropdownValue = newValue;
+                  center.add(center.value);
+                });
+              },
+              items: <String>[
+                'ALL',
+                'DISTURBANCE',
+                'VEHICLE BURGLARY',
+                'STOLEN VEHICLE',
+                'THEFT',
+                'ASSAULT AND BATTERY',
+                'ASSAULT',
+                'CRIMINAL THREATS',
+                'FIREARMS DISCHARGED',
+                'PARKING VIOLATION',
+                'ROBBERY',
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
             ))
       ],
     );
@@ -125,9 +160,15 @@ class _NearbyState extends State<Nearby> {
   }
 
   void _updateMarkers(List<DocumentSnapshot> documentList) {
+    markers.clear();
     documentList.forEach((DocumentSnapshot document) {
       final GeoPoint point = document.data()['location']['geopoint'];
-      _addMarker(point.latitude, point.longitude, document);
+      if(dropdownValue == 'ALL') _addMarker(point.latitude, point.longitude, document);
+      else {
+        if (document.data()['primary_type'] == dropdownValue) {
+          _addMarker(point.latitude, point.longitude, document);
+        }
+      }
     });
   }
 
