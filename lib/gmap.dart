@@ -10,9 +10,8 @@ import 'package:rxdart/rxdart.dart';
 
 class GMap extends StatefulWidget {
   final Position initialPosition;
-  final List<dynamic> crimeData;
 
-  GMap({Key key, this.initialPosition, this.crimeData}) : super(key: key);
+  GMap(this.initialPosition);
 
   @override
   _GMapState createState() => _GMapState();

@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: IndexedStack(
         children: <Widget>[
-          GMap(initialPosition: widget.initialPosition, crimeData: crimeData, key: ValueKey<Object>(redrawObject)),
+          GMap(widget.initialPosition),
           Nearby(widget.initialPosition),
           Analytics(crimeData: crimeData, key: UniqueKey())
         ],

@@ -16,7 +16,6 @@ class Notify{
   List<String> visitedHash = [];
 
   void notifyUser(){
-    print("notifying");
     _getData();
     GeoHasher geohasher = GeoHasher();
     geoService.getCurrentLocation().listen((position) {
@@ -60,7 +59,6 @@ class Notify{
   }
 
   bool checkIfInDenseHash(String hash){
-    print("checking");
     GeoHash currentHash = GeoHash(hash);
     if (!resultList.contains(hash)){
       visitedHash = [];
