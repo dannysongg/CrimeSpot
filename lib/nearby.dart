@@ -23,12 +23,17 @@ class _NearbyState extends State<Nearby> {
 
   final _firestore = FirebaseFirestore.instance;
   Geoflutterfire geo;
-  Stream<List<DocumentSnapshot>> stream;
-  double radius = 1.2;
+  Stream<List<DocumentSnapshot>> stream1;
+  Stream<List<DocumentSnapshot>> stream2;
+  //double radius = 1.2;
+  BehaviorSubject<double> radius = BehaviorSubject<double>.seeded(1.0);
   BehaviorSubject<GeoFirePoint> center;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  var sources = [];
 
+  @override
   void initState() {
+    super.initState();
     geo = Geoflutterfire();
 
     //create a stream for center coordinates
@@ -36,29 +41,61 @@ class _NearbyState extends State<Nearby> {
         latitude: widget.initialPosition.latitude,
         longitude: widget.initialPosition.longitude);
     center = BehaviorSubject<GeoFirePoint>.seeded(_center);
+    sources = [center, radius];
 
     var collectionReference = _firestore.collection('crimes');
-    stream = center.switchMap((cent) {
+    stream1 = center.switchMap((cent) {
       return geo.collection(collectionRef: collectionReference).within(
-          center: cent, radius: radius, field: 'location', strictMode: true);
+          center: cent,
+          radius: radius.value,
+          field: 'location',
+          strictMode: true);
+    });
+    stream2 = radius.switchMap((rad) {
+      return geo.collection(collectionRef: collectionReference).within(
+          center: center.value,
+          radius: rad,
+          field: 'location',
+          strictMode: true);
     });
 
     geoService.getCurrentLocation().listen((position) {
       centerScreen(position);
       newMarkers(position);
     });
-
-    super.initState();
   }
 
   @override
   void dispose() {
     center.close();
+    radius.close();
     super.dispose();
   }
 
   Widget build(BuildContext context) {
-    return googleMapUI();
+    return Stack(
+      children: [
+        googleMapUI(),
+        Positioned(
+            bottom: 50,
+            left: 10,
+            child: Slider(
+              min: 1.0,
+              max: 5.0,
+              divisions: 5,
+              value: radius.value,
+              label: '${radius.value}km Radius',
+              activeColor: Colors.purple,
+              inactiveColor: Colors.purple.withOpacity(0.5),
+              onChanged: (double value) {
+                setState(() {
+                  radius.add(value);
+                });
+              },
+            ))
+      ],
+    );
+    //return googleMapUI();
   }
 
   Widget googleMapUI() {
@@ -78,7 +115,11 @@ class _NearbyState extends State<Nearby> {
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
-    stream.listen((List<DocumentSnapshot> documentList) {
+    stream1.listen((List<DocumentSnapshot> documentList) {
+      _updateMarkers(documentList);
+    });
+
+    stream2.listen((List<DocumentSnapshot> documentList) {
       _updateMarkers(documentList);
     });
   }
