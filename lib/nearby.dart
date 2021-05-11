@@ -116,7 +116,6 @@ class _NearbyState extends State<Nearby> {
                 'STOLEN VEHICLE',
                 'THEFT',
                 'ASSAULT AND BATTERY',
-                'ASSAULT',
                 'CRIMINAL THREATS',
                 'FIREARMS DISCHARGED',
                 'PARKING VIOLATION',
